@@ -1,0 +1,20 @@
+# FastAPI and server dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+python-multipart==0.0.6
+
+# LangChain and AI dependencies
+langchain==0.1.0
+langchain-google-genai==0.0.5
+langchain-community==0.0.10
+google-generativeai==0.3.2
+
+# Utility dependencies
+python-dotenv==1.0.0
+tiktoken==0.5.2
+
+# Security and validation
+email-validator==2.1.0
+
