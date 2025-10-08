@@ -5,6 +5,10 @@ Manages environment variables and application settings.
 
 from pydantic_settings import BaseSettings
 from typing import Optional
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
 class Settings(BaseSettings):
@@ -21,7 +25,7 @@ class Settings(BaseSettings):
     """
     
     # Google Gemini AI Configuration
-    google_api_key: str
+    google_api_key: os.getenv("GOOGLE_API_KEY")
     
     # Application Configuration
     app_name: str = "EduSense AI"
@@ -33,7 +37,7 @@ class Settings(BaseSettings):
     port: int = 8000
     
     # Model Configuration
-    model_name: str = "gemini-pro"
+    model_name: str = "gemini-2.5-flash"
     temperature: float = 0.7
     max_tokens: Optional[int] = None
     
