@@ -12,6 +12,7 @@ from typing import Dict, Any
 
 
 BASE_URL = "http://localhost:8000"
+API_PREFIX = "/api/v1"
 
 
 def print_response(title: str, response: Dict[Any, Any]):
@@ -23,16 +24,29 @@ def print_response(title: str, response: Dict[Any, Any]):
     print('=' * 60)
 
 
-def test_health_check():
-    """Test the health check endpoint."""
-    print("\n🔍 Testing Health Check Endpoint...")
-    response = requests.get(f"{BASE_URL}/api/v1/education/health")
+def test_global_health_check():
+    """Test the global health check endpoint."""
+    print("\n🔍 Testing Global Health Check Endpoint...")
+    response = requests.get(f"{BASE_URL}/health")
     
     if response.status_code == 200:
-        print("✅ Health check passed!")
-        print_response("Health Check Response", response.json())
+        print("✅ Global health check passed!")
+        print_response("Global Health Check Response", response.json())
     else:
         print(f"❌ Health check failed with status {response.status_code}")
+        print(response.text)
+
+
+def test_chat_health_check():
+    """Test the chat service health check endpoint."""
+    print("\n🔍 Testing Chat Service Health Check...")
+    response = requests.get(f"{BASE_URL}{API_PREFIX}/chat/health")
+    
+    if response.status_code == 200:
+        print("✅ Chat service health check passed!")
+        print_response("Chat Health Check Response", response.json())
+    else:
+        print(f"❌ Chat health check failed with status {response.status_code}")
         print(response.text)
 
 
@@ -52,7 +66,7 @@ def test_chat_with_notes():
     }
     
     response = requests.post(
-        f"{BASE_URL}/api/v1/education/chat",
+        f"{BASE_URL}{API_PREFIX}/chat",
         json=payload
     )
     
@@ -81,7 +95,7 @@ def test_generate_curriculum():
     }
     
     response = requests.post(
-        f"{BASE_URL}/api/v1/education/curriculum",
+        f"{BASE_URL}{API_PREFIX}/curriculum",
         json=payload
     )
     
@@ -110,7 +124,7 @@ def test_generate_mcq():
     }
     
     response = requests.post(
-        f"{BASE_URL}/api/v1/education/mcq",
+        f"{BASE_URL}{API_PREFIX}/mcq",
         json=payload
     )
     
@@ -140,7 +154,7 @@ def test_generate_flashcards():
     }
     
     response = requests.post(
-        f"{BASE_URL}/api/v1/education/flashcards",
+        f"{BASE_URL}{API_PREFIX}/flashcards",
         json=payload
     )
     
@@ -152,17 +166,37 @@ def test_generate_flashcards():
         print(response.text)
 
 
+def test_all_health_checks():
+    """Test all service health check endpoints."""
+    print("\n🏥 Testing All Service Health Checks...")
+    
+    endpoints = {
+        "Chat Service": f"{API_PREFIX}/chat/health",
+        "Curriculum Service": f"{API_PREFIX}/curriculum/health",
+        "MCQ Service": f"{API_PREFIX}/mcq/health",
+        "Flashcard Service": f"{API_PREFIX}/flashcards/health",
+    }
+    
+    for service_name, endpoint in endpoints.items():
+        response = requests.get(f"{BASE_URL}{endpoint}")
+        status = "✅" if response.status_code == 200 else "❌"
+        print(f"{status} {service_name}: {response.json()['status']}")
+
+
 def main():
     """Run all tests."""
     print("\n" + "=" * 60)
     print("  🧪 EduSense AI API Testing Suite")
     print("=" * 60)
     print("\nMake sure the server is running at", BASE_URL)
-    print("Start it with: python run.py\n")
+    print("Start it with: python -m uvicorn app.main:app --reload\n")
     
     try:
-        # Test health check first
-        test_health_check()
+        # Test global health check first
+        test_global_health_check()
+        
+        # Test all service health checks
+        test_all_health_checks()
         
         # Run API tests
         test_chat_with_notes()
@@ -177,11 +211,10 @@ def main():
     except requests.exceptions.ConnectionError:
         print("\n❌ Error: Could not connect to the server.")
         print("Make sure the server is running at", BASE_URL)
-        print("Start it with: python run.py")
+        print("Start it with: python -m uvicorn app.main:app --reload")
     except Exception as e:
         print(f"\n❌ An error occurred: {str(e)}")
 
 
 if __name__ == "__main__":
     main()
-

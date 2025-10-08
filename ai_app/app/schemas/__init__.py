@@ -1,38 +1,41 @@
 """Schemas module for request and response validation."""
 
-from app.schemas.requests import (
-    ChatWithNotesRequest,
+from app.schemas.chat_schemas import ChatWithNotesRequest, ChatResponse
+from app.schemas.curriculum_schemas import (
     GenerateCurriculumRequest,
-    GenerateMCQRequest,
-    GenerateFlashcardsRequest,
-)
-from app.schemas.responses import (
-    ChatResponse,
     CurriculumResponse,
     CurriculumWeek,
+)
+from app.schemas.mcq_schemas import (
+    GenerateMCQRequest,
     MCQResponse,
     MCQQuestion,
     MCQOption,
+)
+from app.schemas.flashcard_schemas import (
+    GenerateFlashcardsRequest,
     FlashcardsResponse,
     Flashcard,
-    ErrorResponse,
 )
+from app.schemas.common_schemas import ErrorResponse
 
 __all__ = [
-    # Request schemas
+    # Chat schemas
     "ChatWithNotesRequest",
-    "GenerateCurriculumRequest",
-    "GenerateMCQRequest",
-    "GenerateFlashcardsRequest",
-    # Response schemas
     "ChatResponse",
+    # Curriculum schemas
+    "GenerateCurriculumRequest",
     "CurriculumResponse",
     "CurriculumWeek",
+    # MCQ schemas
+    "GenerateMCQRequest",
     "MCQResponse",
     "MCQQuestion",
     "MCQOption",
+    # Flashcard schemas
+    "GenerateFlashcardsRequest",
     "FlashcardsResponse",
     "Flashcard",
+    # Common schemas
     "ErrorResponse",
 ]
-

@@ -6,7 +6,12 @@ Provides AI-powered educational endpoints for chat, curriculum, MCQs, and flashc
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from app.routes import education_router
+from app.routes import (
+    chat_router,
+    curriculum_router,
+    mcq_router,
+    flashcard_router,
+)
 from app.config import settings
 import logging
 from datetime import datetime
@@ -74,8 +79,13 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 
-# Include routers
-app.include_router(education_router)
+# Include routers with API prefix
+API_PREFIX = "/api/v1"
+
+app.include_router(chat_router, prefix=API_PREFIX)
+app.include_router(curriculum_router, prefix=API_PREFIX)
+app.include_router(mcq_router, prefix=API_PREFIX)
+app.include_router(flashcard_router, prefix=API_PREFIX)
 
 
 @app.get("/", tags=["Root"])
@@ -93,13 +103,40 @@ async def root():
         "timestamp": datetime.now(),
         "documentation": "/docs",
         "endpoints": {
-            "chat_with_notes": "/api/v1/education/chat",
-            "generate_curriculum": "/api/v1/education/curriculum",
-            "generate_mcq": "/api/v1/education/mcq",
-            "generate_flashcards": "/api/v1/education/flashcards",
-            "health_check": "/api/v1/education/health"
+            "chat_with_notes": f"{API_PREFIX}/chat",
+            "generate_curriculum": f"{API_PREFIX}/curriculum",
+            "generate_mcq": f"{API_PREFIX}/mcq",
+            "generate_flashcards": f"{API_PREFIX}/flashcards",
+        },
+        "health_checks": {
+            "chat_service": f"{API_PREFIX}/chat/health",
+            "curriculum_service": f"{API_PREFIX}/curriculum/health",
+            "mcq_service": f"{API_PREFIX}/mcq/health",
+            "flashcard_service": f"{API_PREFIX}/flashcards/health",
         },
         "description": "AI-powered educational assistant API using Google Gemini and LangChain"
+    }
+
+
+@app.get("/health", tags=["Health"])
+async def global_health_check():
+    """
+    Global health check endpoint.
+    
+    Returns:
+        Dict with overall application health status
+    """
+    return {
+        "status": "healthy",
+        "service": settings.app_name,
+        "version": settings.app_version,
+        "timestamp": datetime.now(),
+        "services": {
+            "chat": "operational",
+            "curriculum": "operational",
+            "mcq": "operational",
+            "flashcards": "operational"
+        }
     }
 
 
@@ -108,6 +145,7 @@ async def startup_event():
     """Execute on application startup."""
     logger.info(f"Starting {settings.app_name} v{settings.app_version}")
     logger.info(f"Debug mode: {settings.debug_mode}")
+    logger.info(f"Using model: {settings.model_name}")
     logger.info("Application started successfully")
 
 
@@ -127,4 +165,3 @@ if __name__ == "__main__":
         reload=settings.debug_mode,
         log_level="info"
     )
-
