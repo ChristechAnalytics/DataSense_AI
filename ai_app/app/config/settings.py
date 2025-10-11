@@ -6,8 +6,8 @@ Manages environment variables and application settings.
 from pydantic_settings import BaseSettings
 from typing import Optional
 from dotenv import load_dotenv
-import os
 
+# Load environment variables from .env file
 load_dotenv()
 
 
@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     """
     
     # Google Gemini AI Configuration
-    google_api_key: os.getenv("GOOGLE_API_KEY")
+    google_api_key: str
     
     # Application Configuration
     app_name: str = "EduSense AI"

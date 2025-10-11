@@ -6,6 +6,7 @@ Provides AI-powered educational endpoints for chat, curriculum, MCQs, and flashc
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.responses import RedirectResponse
 from app.routes import (
     chat_router,
     curriculum_router,
@@ -96,26 +97,7 @@ async def root():
     Returns:
         Dict with API information and available endpoints
     """
-    return {
-        "service": settings.app_name,
-        "version": settings.app_version,
-        "status": "operational",
-        "timestamp": datetime.now(),
-        "documentation": "/docs",
-        "endpoints": {
-            "chat_with_notes": f"{API_PREFIX}/chat",
-            "generate_curriculum": f"{API_PREFIX}/curriculum",
-            "generate_mcq": f"{API_PREFIX}/mcq",
-            "generate_flashcards": f"{API_PREFIX}/flashcards",
-        },
-        "health_checks": {
-            "chat_service": f"{API_PREFIX}/chat/health",
-            "curriculum_service": f"{API_PREFIX}/curriculum/health",
-            "mcq_service": f"{API_PREFIX}/mcq/health",
-            "flashcard_service": f"{API_PREFIX}/flashcards/health",
-        },
-        "description": "AI-powered educational assistant API using Google Gemini and LangChain"
-    }
+    return RedirectResponse(url="/docs")
 
 
 @app.get("/health", tags=["Health"])
